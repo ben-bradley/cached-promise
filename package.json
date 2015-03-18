@@ -1,0 +1,31 @@
+{
+  "name": "cached-promise",
+  "version": "0.0.1",
+  "description": "Take LRU-cache, add a little Promises, stir vigorously, let simmer, enjoy!",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha -R spec"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ben-bradley/cached-promise"
+  },
+  "keywords": [
+    "lru-cache",
+    "promises"
+  ],
+  "author": "Ben Bradley",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ben-bradley/cached-promise/issues"
+  },
+  "homepage": "https://github.com/ben-bradley/cached-promise",
+  "dependencies": {
+    "q": "^1.2.0",
+    "lru-cache": "^2.5.0"
+  },
+  "devDependencies": {
+    "should": "^5.2.0",
+    "mocha": "^2.2.1"
+  }
+}
