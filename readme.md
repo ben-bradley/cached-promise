@@ -1,4 +1,6 @@
-# Cached Promise
+# Cached Promise [![Build Status](https://secure.travis-ci.org/ben-bradley/cached-promise.png)](http://travis-ci.org/ben-bradley/cached-promise)
+
+[![NPM](https://nodei.co/npm/cached-promise.png?downloads=true)](https://nodei.co/npm/cached-promise/)
 
 > Take LRU-cache, add a little Promises, stir vigorously, let simmer, enjoy!
 
