@@ -1,6 +1,6 @@
 {
   "name": "cached-promise",
-  "version": "0.0.1",
+  "version": "0.1.1",
   "description": "Take LRU-cache, add a little Promises, stir vigorously, let simmer, enjoy!",
   "main": "index.js",
   "scripts": {

@@ -14,7 +14,9 @@ describe('CachedPromise', function () {
       load: function (key, resolve, reject) {
         setTimeout(function () { // simulated async operation
           resolve({
-            datetime: new Date().getTime()
+            datetime: new Date().getTime(),
+            key: key.key,
+            value: key.value
           });
         }, 5);
       }
@@ -71,6 +73,20 @@ describe('CachedPromise', function () {
                   done();
                 });
             }, 1001);
+          });
+      });
+
+      it('should allow for using an object with a key property as the key', function(done) {
+        cache.get({
+          key: 'foo',
+          value: 'bar'
+        })
+          .catch(done)
+          .done(function(value) {
+            (value).should.be.an.Object.with.properties(['datetime', 'key', 'value']);
+            (value.key).should.equal('foo');
+            (value.value).should.equal('bar');
+            done();
           });
       });
 
