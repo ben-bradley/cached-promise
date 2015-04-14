@@ -17,11 +17,11 @@ var CachedPromise = require('cached-promise');
 
 var people = new CachedPromise({
   maxAge: 1000 * 2,
-  load: function (key, resolve, reject) {
+  load: function (data, resolve, reject) {
     process.nextTick(function () { // simulated async call
       resolve({
         datetime: new Date().getTime(),
-        key: key
+        key: data.key // <- "bob"
       });
     });
   }
@@ -38,6 +38,42 @@ setInterval(function () {
     });
 
 }, 900);
+
+```
+
+### Keys as objects
+
+I found that I often needed to have other bits of data available in my `load()` function besides just the `key` so I modified the API to be able to handle objects as the key.
+
+```javascript
+var CachedPromise = require('cached-promise');
+
+var people = new CachedPromise({
+  maxAge: 1000 * 2,
+  load: function (data, resolve, reject) {
+    process.nextTick(function () { // simulated async call
+      resolve({
+        datetime: new Date().getTime(),
+        key: data.key, // <- "bob"
+        email: data.email // <- "bob@example.com"
+      });
+    });
+  }
+});
+setTimeout(function() {
+
+  people.get({
+    key: 'bob',
+    email: 'bob@example.com'
+  })
+    .catch(function(err) {
+      throw new Error(err);
+    })
+    .done(function(result) {
+
+    })
+
+}, 1000);
 ```
 
 ## `new CachedPromise(options)`
@@ -99,3 +135,8 @@ Cached Promise wraps all other LRU methods (except `.forEach`) with a simple pro
 ```
 npm test
 ```
+
+## Versions
+
+- 0.1.1 Added feature to allow using objects with key property as the key
+- 0.0.1 Initial version
