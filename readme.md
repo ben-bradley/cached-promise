@@ -128,7 +128,30 @@ Cached Promise also allows you to manually set cache items just like you can wit
 
 ### Other LRU methods
 
-Cached Promise wraps all other LRU methods (except `.forEach`) with a simple promise to keep things uniform.
+Cached Promise wraps all other LRU methods with a simple promise to keep things uniform.
+
+#### LRU `.forEach()`
+
+This one is NOT promise-wrapper.  If you call `cache.forEach()` it will be passed through directly to the LRU `forEach()` method.
+
+```javascript
+// example taken from the tests
+//
+var item = {
+  datetime: new Date()
+};
+
+cache.set('foo', item) // manually create the item
+  .catch(done)
+  .done(function (values) {
+    myCache.forEach(function(value, key, cache) {
+      (value.datetime).should.equal(item.datetime);
+      (key).should.equal('foo');
+      (cache).should.be.an.instanceof(LRU);
+    });
+    done();
+  });
+```
 
 ## Test
 
