@@ -1,4 +1,5 @@
 var should = require('should'),
+  LRU = require('lru-cache');
   CachedPromise = require('../');
 
 describe('CachedPromise', function () {
@@ -239,6 +240,28 @@ describe('CachedPromise', function () {
             (values).should.be.an.Array;
             (values[0]).should.be.an.Object.with.property('datetime');
             (values[0].datetime).should.equal(item.datetime);
+            done();
+          });
+      });
+
+    }); // /#values
+
+    describe('#forEach', function() {
+
+      it('should exist', function() {
+        (cache.forEach).should.exist;
+      });
+
+      it('should pass through to the LRU forEach', function(done) {
+        cache.set('foo', item) // manually create the item
+          .catch(done)
+          .done(function (values) {
+            // var _cache = {};
+            cache.forEach(function(v, k, c) {
+              (v.datetime).should.equal(item.datetime);
+              (k).should.equal('foo');
+              (c).should.be.an.instanceof(LRU);
+            });
             done();
           });
       });
