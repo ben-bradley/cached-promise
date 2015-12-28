@@ -30,11 +30,11 @@ var people = new CachedPromise({
 setInterval(function () {
 
   people.get('bob')
+    .then(function(result) {
+      // do something with the result
+    })
     .catch(function (err) {
       throw new Error(err);
-    })
-    .done(function (result) {
-      console.log(result);
     });
 
 }, 900);
@@ -66,11 +66,11 @@ setTimeout(function() {
     key: 'bob',
     email: 'bob@example.com'
   })
+    .then(function(result) {
+      // do something with the result
+    })
     .catch(function(err) {
       throw new Error(err);
-    })
-    .done(function(result) {
-
     })
 
 }, 1000);
@@ -108,11 +108,11 @@ var users = new CachedPromise({
 setInterval(function () {
 
   users.get('bob')
+    .then(function(result) {
+      // do something with the result
+    })
     .catch(function (err) {
       throw new Error(err);
-    })
-    .done(function (result) {
-      console.log(result);
     });
 
 }, 1000);
@@ -142,14 +142,12 @@ var item = {
 };
 
 cache.set('foo', item) // manually create the item
-  .catch(done)
-  .done(function (values) {
-    myCache.forEach(function(value, key, cache) {
+  .then(function (values) {
+    cache.forEach(function(value, key, _cache) {
       (value.datetime).should.equal(item.datetime);
       (key).should.equal('foo');
-      (cache).should.be.an.instanceof(LRU);
+      (_cache).should.be.an.instanceof(LRU);
     });
-    done();
   });
 ```
 
