@@ -91,6 +91,36 @@ describe('CachedPromise', function () {
           .catch(done);
       });
 
+
+      it('should resolve pending calls all at once', function(done) {
+        this.timeout(5000);
+
+        var c = new CachedPromise({
+          maxAge: 10000, // 10 sec
+          load: function(key, resolve, reject) {
+            setTimeout(function () { // simulated async operation
+              resolve({
+                datetime: new Date().getTime(),
+                key: key.key,
+                bar: true
+              });
+            }, 500);
+          }
+        });
+
+        var hits = 0;
+
+        for (var i = 0; i < 3; i++) {
+          var key = (i === 1) ? 'foo' : { key: 'foo' };
+          c.get(key).then(function(value) {
+            (value.bar).should.eql(true);
+            if (++hits === 3)
+              done();
+          });
+        }
+      });
+
+
     }); // /#get
 
     describe('#set', function () {

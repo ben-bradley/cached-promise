@@ -161,5 +161,7 @@ npm test
 
 ## Versions
 
+- 1.0.0 Refactored to ES6 and introduced pending handler
+  - Pending handler will hold all `load()` calls for the same key until the first one is resolved.
 - 0.1.1 Added feature to allow using objects with key property as the key
 - 0.0.1 Initial version

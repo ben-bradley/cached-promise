@@ -35,7 +35,10 @@ var CachedPromise = (function () {
       var _cache = this._cache;
       var _load = this._load;
       var _pending = this._pending;
-      var key = typeof data === 'string' ? data : data.key;
+
+      var _objectifyKey = objectifyKey(data);
+
+      var key = _objectifyKey.key;
 
       return new Promise(function (resolve, reject) {
         var value = _cache.get(key);
@@ -48,7 +51,7 @@ var CachedPromise = (function () {
 
         _pending.set(key, pending);
 
-        return new Promise(function (res, rej) {
+        if (pending.length === 1) return new Promise(function (res, rej) {
           return _load(data, res, rej);
         }).then(function (result) {
           _cache.set(key, result);
@@ -69,9 +72,9 @@ var CachedPromise = (function () {
     value: function set(data, value) {
       var _this = this;
 
-      var _objectifyKey = objectifyKey(data);
+      var _objectifyKey2 = objectifyKey(data);
 
-      var key = _objectifyKey.key;
+      var key = _objectifyKey2.key;
 
       return new Promise(function (resolve, reject) {
         return resolve(_this._cache.set(key, value));
@@ -82,9 +85,9 @@ var CachedPromise = (function () {
     value: function peek(data) {
       var _this2 = this;
 
-      var _objectifyKey2 = objectifyKey(data);
+      var _objectifyKey3 = objectifyKey(data);
 
-      var key = _objectifyKey2.key;
+      var key = _objectifyKey3.key;
 
       return new Promise(function (resolve, reject) {
         return resolve(_this2._cache.peek(key));
@@ -95,9 +98,9 @@ var CachedPromise = (function () {
     value: function del(data) {
       var _this3 = this;
 
-      var _objectifyKey3 = objectifyKey(data);
+      var _objectifyKey4 = objectifyKey(data);
 
-      var key = _objectifyKey3.key;
+      var key = _objectifyKey4.key;
 
       return new Promise(function (resolve, reject) {
         return resolve(_this3._cache.del(key));
@@ -117,9 +120,9 @@ var CachedPromise = (function () {
     value: function has(data) {
       var _this5 = this;
 
-      var _objectifyKey4 = objectifyKey(data);
+      var _objectifyKey5 = objectifyKey(data);
 
-      var key = _objectifyKey4.key;
+      var key = _objectifyKey5.key;
 
       return new Promise(function (resolve, reject) {
         return resolve(_this5._cache.has(key));

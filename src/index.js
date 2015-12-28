@@ -16,7 +16,7 @@ export default class CachedPromise {
 
   get(data) {
     let { _cache, _load, _pending } = this,
-      key = (typeof data === 'string') ? data : data.key;
+      { key } = objectifyKey(data);
 
     return new Promise((resolve, reject) => {
       let value = _cache.get(key);
@@ -30,16 +30,17 @@ export default class CachedPromise {
 
       _pending.set(key, pending);
 
-      return new Promise((res, rej) => _load(data, res, rej))
-        .then((result) => {
-          _cache.set(key, result);
-          _pending.get(key).map((pending) => pending.resolve(result));
-          _pending.del(key);
-        })
-        .catch((err) => {
-          _pending.get(key).map((pending) => pending.reject(err));
-          _pending.del(key);
-        });
+      if (pending.length === 1)
+        return new Promise((res, rej) => _load(data, res, rej))
+          .then((result) => {
+            _cache.set(key, result);
+            _pending.get(key).map((pending) => pending.resolve(result));
+            _pending.del(key);
+          })
+          .catch((err) => {
+            _pending.get(key).map((pending) => pending.reject(err));
+            _pending.del(key);
+          });
     });
   }
 
