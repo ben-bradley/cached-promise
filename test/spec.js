@@ -42,39 +42,39 @@ describe('CachedPromise', function () {
 
       it('should cache and return a value', function (done) {
         cache.get('foo')
-          .catch(done)
-          .done(function (value) {
+          .then(function (value) {
             (value).should.be.an.Object.with.property('datetime');
             done();
-          });
+          })
+          .catch(done);
       });
 
       it('should cache a value and return it on a second request', function (done) {
         cache.get('foo')
           .catch(done)
-          .done(function (value) {
+          .then(function (value) {
             cache.get('foo')
-              .catch(done)
-              .done(function (value2) {
+              .then(function (value2) {
                 (value2.datetime).should.equal(value.datetime);
                 done();
               });
-          });
+          })
+          .catch(done);
       });
 
       it('should update the cache when requesting an expired key', function (done) {
         cache.get('foo')
-          .catch(done)
-          .done(function (value) {
+          .then(function (value) {
             setTimeout(function () {
               cache.get('foo')
                 .catch(done)
-                .done(function (value2) {
+                .then(function (value2) {
                   (value2.datetime).should.not.equal(value.datetime);
                   done();
                 });
             }, 1001);
-          });
+          })
+          .catch(done);
       });
 
       it('should allow for using an object with a key property as the key', function(done) {
@@ -82,14 +82,44 @@ describe('CachedPromise', function () {
           key: 'foo',
           value: 'bar'
         })
-          .catch(done)
-          .done(function(value) {
+          .then(function(value) {
             (value).should.be.an.Object.with.properties(['datetime', 'key', 'value']);
             (value.key).should.equal('foo');
             (value.value).should.equal('bar');
             done();
-          });
+          })
+          .catch(done);
       });
+
+
+      it('should resolve pending calls all at once', function(done) {
+        this.timeout(5000);
+
+        var c = new CachedPromise({
+          maxAge: 10000, // 10 sec
+          load: function(key, resolve, reject) {
+            setTimeout(function () { // simulated async operation
+              resolve({
+                datetime: new Date().getTime(),
+                key: key.key,
+                bar: true
+              });
+            }, 500);
+          }
+        });
+
+        var hits = 0;
+
+        for (var i = 0; i < 3; i++) {
+          var key = (i === 1) ? 'foo' : { key: 'foo' };
+          c.get(key).then(function(value) {
+            (value.bar).should.eql(true);
+            if (++hits === 3)
+              done();
+          });
+        }
+      });
+
 
     }); // /#get
 
@@ -104,11 +134,11 @@ describe('CachedPromise', function () {
           .then(function () {
             return cache.get('foo');
           })
-          .catch(done)
-          .done(function (value) {
+          .then(function (value) {
             (value.datetime).should.equal(item.datetime);
             done();
-          });
+          })
+          .catch(done);
       });
 
     }); // /#set
@@ -124,11 +154,11 @@ describe('CachedPromise', function () {
           .then(function () {
             return cache.peek('foo');
           })
-          .catch(done)
-          .done(function (value) {
+          .then(function (value) {
             (value).should.be.an.Object.with.property('datetime');
             done();
-          });
+          })
+          .catch(done);
       });
 
     }); // /#peek
@@ -147,11 +177,11 @@ describe('CachedPromise', function () {
           .then(function () {
             return cache.get('foo'); // get/create the item
           })
-          .catch(done)
-          .done(function (value) {
+          .then(function (value) {
             (value.datetime).should.not.equal(item.datetime);
             done();
-          });
+          })
+          .catch(done);
       });
 
     }); // /#del
@@ -170,11 +200,11 @@ describe('CachedPromise', function () {
           .then(function () {
             return cache.get('foo'); // get/create the item
           })
-          .catch(done)
-          .done(function (value) {
+          .then(function (value) {
             (value.datetime).should.not.equal(item.datetime);
             done();
-          });
+          })
+          .catch(done);
       });
 
     }); // /#reset
@@ -194,11 +224,11 @@ describe('CachedPromise', function () {
             (has).should.eql(true);
             return cache.has('bar');
           })
-          .catch(done)
-          .done(function (has) {
+          .then(function (has) {
             (has).should.eql(false);
             done();
-          });
+          })
+          .catch(done);
       });
 
     }); // /#has
@@ -214,12 +244,12 @@ describe('CachedPromise', function () {
           .then(function () {
             return cache.keys();
           })
-          .catch(done)
-          .done(function (keys) {
+          .then(function (keys) {
             (keys).should.be.an.Array;
             (keys[0]).should.equal('foo');
             done();
-          });
+          })
+          .catch(done);
       });
 
     }); // /#keys
@@ -235,13 +265,13 @@ describe('CachedPromise', function () {
           .then(function () {
             return cache.values();
           })
-          .catch(done)
-          .done(function (values) {
+          .then(function (values) {
             (values).should.be.an.Array;
             (values[0]).should.be.an.Object.with.property('datetime');
             (values[0].datetime).should.equal(item.datetime);
             done();
-          });
+          })
+          .catch(done);
       });
 
     }); // /#values
@@ -254,8 +284,7 @@ describe('CachedPromise', function () {
 
       it('should pass through to the LRU forEach', function(done) {
         cache.set('foo', item) // manually create the item
-          .catch(done)
-          .done(function (values) {
+          .then(function (values) {
             // var _cache = {};
             cache.forEach(function(v, k, c) {
               (v.datetime).should.equal(item.datetime);
@@ -263,7 +292,8 @@ describe('CachedPromise', function () {
               (c).should.be.an.instanceof(LRU);
             });
             done();
-          });
+          })
+          .catch(done);
       });
 
     }); // /#values
