@@ -1,2 +1,2 @@
-// oink!
-module.exports = require('./lib/cached-promise');
+// oink
+module.exports = require('./dist')
